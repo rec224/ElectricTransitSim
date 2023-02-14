@@ -1,4 +1,6 @@
 #most helpful example for the actual simulation
+#want the simulation to predict battery charge based on what a bus leaves with
+#and given a particular route
 import simpy
 def bus(env, name, bcs, route_time, charge_duration, battery):
     #simulate driving to the BCS
