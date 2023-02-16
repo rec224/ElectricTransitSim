@@ -21,6 +21,8 @@ energy_cons_dst = normal(2, 0.005, 50)
 # create a histrogram to show the normal distribution
 count, bins, ignored = plt.hist(energy_cons_dst, 10)
 plt.show()
+
+# select random number of miles from range of options
 miles = random.randint(50, 150)
 
 
