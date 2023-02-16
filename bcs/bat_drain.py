@@ -11,7 +11,7 @@ def bus(env, name, battery):
     r_time = r_times[route-1]
     # battery will drain -- find out a way for it to vary
     battery = battery - r_time
-    print('Bus battery on route  returning with %d percent battery' %battery)
+    print('Bus on route  returning with %d percent battery' %battery)
 
 
 env = simpy.Environment()
