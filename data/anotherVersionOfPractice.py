@@ -51,4 +51,27 @@ plt.ylabel("Distance Driven")
 plt.xlim(0,1.1)
 plt.show()
 
+# this is with seaborn
+import seaborn
+import pandas as pd
+df = pd.read_csv('bigCSV.csv')
+import csv
+import matplotlib.pyplot as plt
+arr = df.to_numpy()
+color = ["b","r","g","c","m","y","k","fuchsia","lightgreen","darkgoldenrod","lightsteelblue", "blueviolet", "darkorange", "bisque"]
+counter = 0
+labels = ["2600", "2601", "2602", "2603", "2604", "2605", "2606", "2607", "2608", "2609", "2610", "2611", "2612", "2613"]
+
+
+for i in range(0,168,12):
+    x = arr[:,i+9]
+    y = arr[:,i+10]
+    csv = pd.read_csv(r'bigCSV.csv')
+    res = seaborn.scatterplot(x=x, y=y, data=csv, label = labels[counter] ,color = color[counter])
+    counter = counter +1
+res.set_title("Seaborn example")
+res.set_xlabel("Energy Used")
+res.set_ylabel("Distance Driven")
+#res.legend(labels = ["2600", "2601", "2602", "2603", "2604", "2605", "2606", "2607", "2608", "2609", "2610", "2611", "2612", "2613"])
+plt.show()
 
