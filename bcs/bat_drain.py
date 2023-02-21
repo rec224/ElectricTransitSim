@@ -4,7 +4,6 @@
 import simpy
 import random
 #import these to create a normal distribution
-import numpy
 from numpy.random import normal
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
