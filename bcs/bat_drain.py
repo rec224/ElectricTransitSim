@@ -45,7 +45,7 @@ env = simpy.Environment()
 # accurate bus numbers
 
 #running the file for 5 buses (five times)
-for i in range(0,5):
+for i in range(1,6):
     #lets say buses have to charge for 3 hrs
     #want battery recorded too? 
     battery = 100
