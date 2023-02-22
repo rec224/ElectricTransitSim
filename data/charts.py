@@ -9,9 +9,25 @@ arr = df.to_numpy()
 # print(arr[:,2])
 
 colorArr = ["red", "green", "blue", "orange", "purple", "skyblue", "hotpink", "teal", "lime", "navy", "goldenrod", "plum", "firebrick", "silver"]
+
 for i in range (0, 157, 12):
-    x = arr[:,i+2]
-    y = arr[:,i+8]
+    dist = arr[:,i+10] #distance driven
+    engy = arr[:,i+3] #energy consumed driving
+    speed = arr[:, i+2]
+
+    
+    l = str(2600+int(i/12))
+    plt.scatter(speed,engy/dist, 3, color=colorArr[int(i/12)], label = l)
+
+plt.xlabel("speed (mph)")
+plt.ylabel("Efficency (KwH/m)")
+leg = plt.legend(loc ="upper right");
+
+plt.show()
+
+for i in range (0, 157, 12):
+    x = arr[:,i+2] #average speed
+    y = arr[:,i+8] #energy regen
     
     filter_arr = []
     for element in x:
@@ -23,7 +39,7 @@ for i in range (0, 157, 12):
     newX = x[filter_arr]
     newY = y[filter_arr]
     
-    l = str(2600+int(i/12));
+    l = str(2600+int(i/12))
     plt.scatter(newX,newY, 3, color=colorArr[int(i/12)], label = l)
 
 plt.xlabel("Average speed")
@@ -36,7 +52,7 @@ for i in range (0, 157, 12):
     x = arr[:,i+11]
     y = arr[:,i+3]
     
-    l = str(2600+int(i/12));
+    l = str(2600+int(i/12))
     plt.scatter(x,y, 3, color=colorArr[int(i/12)], label = l)
 
 plt.xlabel("Time driving")
@@ -49,7 +65,7 @@ for i in range (0, 157, 12):
     x = arr[:,i+11]
     y = arr[:,i+5]
     
-    l = str(2600+int(i/12));
+    l = str(2600+int(i/12))
     plt.scatter(x,y, 3, color=colorArr[int(i/12)], label = l)
 
 plt.xlabel("Time driving")
