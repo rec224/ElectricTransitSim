@@ -20,7 +20,7 @@ energy_cons_dst = normal(2, 0.005, 50)
 # create a histrogram to show the normal distribution (10 bins)
 count, bins, ignored = plt.hist(energy_cons_dst, 10)
 plt.show()
-
+#try trating the buses as an object with own state of charge etc. 
 def bus(env, name, battery):
     # battery will drain -- find out a way for it to vary
     # select random number of miles from range of options
@@ -28,10 +28,13 @@ def bus(env, name, battery):
     # select random value from the probability distribution
     # needs some sort of division or percentage function, 
     # otherwise, battery percentage ends up negative
-    energy_cons_val = random.normalvariate(mean, std)/3
+    energy_cons_val = random.normalvariate(mean, std)
     #calculate the random amount of energy used 
+    #energy is in kW*hrs
+    #battery is 440
     energy = miles * energy_cons_val
-    battery = battery - energy
+    #gives percetage out of 440
+    battery = ((battery - energy)/440) *100
     print('Bus %d returning with %d percent battery' %(i , battery))
 
 env = simpy.Environment()
@@ -51,7 +54,7 @@ for i in range(1,6):
     #want battery recorded too? 
     #bus leaves at a cheduled time (everry 120 minutes)
     print('Bus %d leaving at time %d' % (i, scheduled_start))
-    battery = 100
+    battery = 440
     #bus drives its route
     bus(env, 'Bus %d' % i, battery)
     #the duration of the drive will vary, lets call average of 120 minutes and std of 45 minutes
