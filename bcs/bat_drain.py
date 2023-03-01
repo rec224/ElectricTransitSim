@@ -7,6 +7,7 @@ import random
 from numpy.random import normal
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
+import time
 #routes = [1,2,3]
 #r_times = [20, 25, 30]
  
@@ -71,20 +72,58 @@ env = simpy.Environment()
 # bcs = simpy.Resource(env, capacity=6)
 # accurate bus numbers
 
-#running the file for 5 buses (five times)
 #schedule for the buses starts at time 0, expected route duration is 2hrs (120 min)
-scheduled_start = 0
+scheduled_start = 240
 for i in range(0,10): 
     #bus leaves at a cheduled time (everry 120 minutes)
-    print('Bus %d leaving at time %d' % (i+1, scheduled_start))
-    #the duration of the drive will vary, lets call average of 120 minutes and std of 45 minutes
-    drive_dur = random.normalvariate(120, 45)
+    leave_hr = scheduled_start/60
+    leave_12 = "pm"
+    if leave_hr < 12:
+         leave_12 = "am"
+    if(leave_hr ==0):
+            leave_hr = 12
+    leave_min = scheduled_start%60
+    if leave_hr > 12:
+         leave_hr = leave_hr -12
+    leave_time = "%02d:%02d" % (leave_hr, leave_min) 
+    leave_time = leave_time + leave_12
+    print('Bus %d leaving at time %s' % (i+1, leave_time))
+    #the duration of the drive will vary, lets call average of 120 minutes and std of 20 minutes
+    drive_dur = random.normalvariate(120, 20)
     #calculate return time
-    print('Bus %d returning at time %d' % (i+1, scheduled_start + drive_dur))
+    return_time = drive_dur + scheduled_start
+    return_hr = return_time/60
+    return_12 = "am"
+    if return_hr > 12 and return_hr <24:
+         return_12 = "pm"
+    if(return_hr ==0):
+            return_hr = 12
+    return_min = return_time%60
+    if return_hr > 12:
+         return_hr = return_hr -12
+    freturn_time = "%02d:%02d" % (return_hr, return_min) 
+    freturn_time = freturn_time + return_12
+    print('Bus %d returning at time %s' % (i+1, freturn_time))
     bat = busList[i].charge
     mil = busList[i].r_dist
     print('Bus %d returning with %d percent charge after %d miles'% (i+1, bat, mil))
-    print('Expected return %d' %(scheduled_start + 120))
+    #est ret time
+    ereturn_time = scheduled_start +120
+    ereturn_hr = ereturn_time/60
+    ereturn_12 = "pm"
+    if ereturn_hr < 12:
+         ereturn_12 = "am"
+    if(ereturn_hr ==0):
+            ereturn_hr = 12
+    ereturn_min = ereturn_time%60
+    if ereturn_hr > 12:
+        ereturn_hr = ereturn_hr -12
+        if ereturn_hr == 12:
+            ereturn_12 = "am"
+    
+    efreturn_time = "%02d:%02d" % (ereturn_hr, ereturn_min) 
+    efreturn_time = efreturn_time + ereturn_12
+    print('Expected return %s' % efreturn_time)
     #increment the scheduled start time for the next bus
     scheduled_start = scheduled_start + 120
     print('\n')
