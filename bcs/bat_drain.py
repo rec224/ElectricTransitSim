@@ -109,14 +109,14 @@ y2 = eret_list
 vals =  ['Estimated', 'Actual']
 # plot
 fig, ax = plt.subplots()
-ax.set_title('Difference Between Expected Return and Actual Return')
-ax.set_xlabel('Scheduled Start Time')
-ax.set_ylabel('Return Time')
 red_patch = mpatches.Patch(color='red', label='Estimated Return Time')
 green_patch = mpatches.Patch(color ='green', label = 'Actual Return Time')
 ax.legend(handles=[red_patch, green_patch])
 ax.plot(x, y1, 'go')
 ax.plot(x, y2, 'ro')
+plt.title('Difference Between Expected Return and Actual Return')
+plt.xlabel('Scheduled Start Time')
+plt.ylabel('Return Time')
 plt.show()
 
 env.run()
