@@ -7,7 +7,7 @@ from numpy.random import normal
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
 import numpy
-
+import matplotlib.patches as mpatches 
 class Bus:
     def __init__(self, charge, r_dist):
         self.charge = charge
@@ -112,9 +112,11 @@ fig, ax = plt.subplots()
 ax.set_title('Difference Between Expected Return and Actual Return')
 ax.set_xlabel('Scheduled Start Time')
 ax.set_ylabel('Return Time')
-ax.legend(vals, title = 'Key')
-plt.plot(x, y1,'go', x, y2, 'ro')
-
+red_patch = mpatches.Patch(color='red', label='Estimated Return Time')
+green_patch = mpatches.Patch(color ='green', label = 'Actual Return Time')
+ax.legend(handles=[red_patch, green_patch])
+ax.plot(x, y1, 'go')
+ax.plot(x, y2, 'ro')
 plt.show()
 
 env.run()
