@@ -1,4 +1,3 @@
-#most helpful example for the actual simulation
 #want the simulation to predict battery charge based on what a bus leaves with
 #and given a particular route
 import simpy
@@ -7,35 +6,7 @@ import random
 from numpy.random import normal
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
-import time
-#routes = [1,2,3]
-#r_times = [20, 25, 30]
- 
-# is sample size based on number of buses or number of routes or bus drivers etc.?
-#mean = 2
-#std = 0.005
-#energy_cons_dst = normal(2, 0.005, 50)
-# ^ creates normal dist w median 2, std dev 0.005, and sample size 50
-# create a histrogram to show the normal distribution (10 bins)
-#count, bins, ignored = plt.hist(energy_cons_dst, 10)
-#plt.show()
-#try treating the buses as an object with own state of charge etc. 
-#def bus(env, name, battery):
-    # battery will drain -- find out a way for it to vary
-    # select random number of miles from range of options
-    #miles = random.randint(50, 150)
-    # select random value from the probability distribution
-    # needs some sort of division or percentage function, 
-    # otherwise, battery percentage ends up negative
-    #energy_cons_val = random.normalvariate(mean, std)
-    #calculate the random amount of energy used 
-    #energy is in kW*hrs
-    #battery is 440
-    #energy = miles * energy_cons_val
-    #gives percetage out of 440
-    #battery = ((battery - energy)/440) *100
-    #print('Bus %d returning with %d percent battery' %(i , battery))
-#miles = random.randint(50, 150)
+
 class Bus:
     def __init__(self, charge, r_dist):
         self.charge = charge
@@ -48,7 +19,7 @@ std = 0.005
 energy_cons_dst = normal(2, 0.005, 50)
 # ^ creates normal dist w median 2, std dev 0.005, and sample size 50
 # create a histrogram to show the normal distribution (10 bins)
-count, bins, ignored = plt.hist(energy_cons_dst, 10)
+# count, bins, ignored = plt.hist(energy_cons_dst, 10)
 plt.show()
 while(i<11):
     battery = 440
@@ -64,13 +35,6 @@ while(i<11):
     i=i+1
 
 env = simpy.Environment()
-# can ignore anything below here, this stuff will be useful later: 
-
-
-# capacity limites the number of charging spots to 6 -- how many are there actually
-# resource limits are not important right now
-# bcs = simpy.Resource(env, capacity=6)
-# accurate bus numbers
 
 #schedule for the buses starts at time 0, expected route duration is 2hrs (120 min)
 scheduled_start = 240
