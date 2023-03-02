@@ -6,6 +6,7 @@ import random
 from numpy.random import normal
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
+import numpy
 
 class Bus:
     def __init__(self, charge, r_dist):
@@ -35,6 +36,9 @@ while(i<11):
     i=i+1
 
 env = simpy.Environment()
+start_list = []
+ret_list = []
+eret_list =[]
 
 #schedule for the buses starts at time 0, expected route duration is 2hrs (120 min)
 scheduled_start = 240
@@ -52,6 +56,7 @@ for i in range(0,10):
     leave_time = "%02d:%02d" % (leave_hr, leave_min) 
     leave_time = leave_time + leave_12
     print('Bus %d leaving at time %s' % (i+1, leave_time))
+    start_list.append(leave_time)
     #the duration of the drive will vary, lets call average of 120 minutes and std of 20 minutes
     drive_dur = random.normalvariate(120, 20)
     #calculate return time
@@ -65,9 +70,11 @@ for i in range(0,10):
     return_min = return_time%60
     if return_hr > 12:
          return_hr = return_hr -12
+    ## i have a bug in here going from am to pm 
     freturn_time = "%02d:%02d" % (return_hr, return_min) 
     freturn_time = freturn_time + return_12
     print('Bus %d returning at time %s' % (i+1, freturn_time))
+    ret_list.append(freturn_time)
     bat = busList[i].charge
     mil = busList[i].r_dist
     print('Bus %d returning with %d percent charge after %d miles'% (i+1, bat, mil))
@@ -88,9 +95,26 @@ for i in range(0,10):
     efreturn_time = "%02d:%02d" % (ereturn_hr, ereturn_min) 
     efreturn_time = efreturn_time + ereturn_12
     print('Expected return %s' % efreturn_time)
+    eret_list.append(efreturn_time)
     #increment the scheduled start time for the next bus
     scheduled_start = scheduled_start + 120
     print('\n')
 
+plt.style.use('_mpl-gallery')
+
+# make the data
+x = start_list
+y1 = ret_list
+y2 = eret_list
+vals =  ['Estimated', 'Actual']
+# plot
+fig, ax = plt.subplots()
+ax.set_title('Difference Between Expected Return and Actual Return')
+ax.set_xlabel('Scheduled Start Time')
+ax.set_ylabel('Return Time')
+ax.legend(vals, title = 'Key')
+plt.plot(x, y1,'go', x, y2, 'ro')
+
+plt.show()
 
 env.run()
