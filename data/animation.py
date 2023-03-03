@@ -7,7 +7,7 @@ arr = df.to_numpy()
 
 colorArr = ["red", "green", "blue", "orange", "purple", "skyblue", "hotpink", "teal", "lime", "navy", "goldenrod", "plum", "firebrick", "silver"]
 
-for filter in range(1, 50, 2):
+for filter in range(0, 50, 1):
   for i in range (0, 157, 12):
       x = arr[:,i+2] #speed
       y = arr[:,i+4] #energy
