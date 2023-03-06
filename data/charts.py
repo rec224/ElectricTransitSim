@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('biggestCSV.csv')
+df = pd.read_csv('bigCSV.csv')
 
 arr = df.to_numpy()
 # print(arr)
@@ -10,42 +10,42 @@ arr = df.to_numpy()
 
 colorArr = ["red", "green", "blue", "orange", "purple", "skyblue", "hotpink", "teal", "lime", "navy", "goldenrod", "plum", "firebrick", "silver"]
 
-for i in range (0, 168, 12):
-    x = arr[:,i+11]
-    y = arr[:,i+8]
-    l = str(2600+int(i/12));
-    plt.scatter(x,y, 3, color=colorArr[int(i/12)], label = l)
+# for i in range (0, 168, 12):
+#     x = arr[:,i+11]
+#     y = arr[:,i+8]
+#     l = str(2600+int(i/12));
+#     plt.scatter(x,y, 3, color=colorArr[int(i/12)], label = l)
 
-plt.xlabel("Distance driven (miles)")
-plt.ylabel("Energy used (kWh)")
-plt.title("Energy vs Distance: Full Viricity data")
-leg = plt.legend(loc ="upper right");
-
-plt.show()
-
-for i in range (0, 157, 12):
-    x = arr[:,i+11]#speed
-    y = arr[:,i+8]#energy used
-    
-    filter_arr = []
-    for j in range(0, len(x)):
-        if(x[j]>40 or y[j]>80):
-            filter_arr.append(False)
-        else:
-            filter_arr.append(True)
-
-    newX = x[filter_arr]
-    newY = y[filter_arr]
-    
-    l = str(2600+int(i/12));
-    plt.scatter(newX,newY, 3, color=colorArr[int(i/12)], label = l)
-
-plt.xlabel("Distance driven (miles)")
-plt.ylabel("Energy used (kWh)")
-plt.title("Energy vs Distance: Full Viricity data filtered")
+# plt.xlabel("Distance driven (miles)")
+# plt.ylabel("Energy used (kWh)")
+# plt.title("Energy vs Distance: Full Viricity data")
 # leg = plt.legend(loc ="upper right");
 
-plt.show()
+# plt.show()
+
+# for i in range (0, 157, 12):
+#     x = arr[:,i+11]#speed
+#     y = arr[:,i+8]#energy used
+    
+#     filter_arr = []
+#     for j in range(0, len(x)):
+#         if(x[j]>40 or y[j]>80):
+#             filter_arr.append(False)
+#         else:
+#             filter_arr.append(True)
+
+#     newX = x[filter_arr]
+#     newY = y[filter_arr]
+    
+#     l = str(2600+int(i/12));
+#     plt.scatter(newX,newY, 3, color=colorArr[int(i/12)], label = l)
+
+# plt.xlabel("Distance driven (miles)")
+# plt.ylabel("Energy used (kWh)")
+# plt.title("Energy vs Distance: Full Viricity data filtered")
+# # leg = plt.legend(loc ="upper right");
+
+# plt.show()
 
 for i in range (0, 157, 12):
     dist = arr[:,i+10] #distance driven
