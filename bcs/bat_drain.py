@@ -9,9 +9,13 @@ import matplotlib.pyplot as plt
 import numpy
 import matplotlib.patches as mpatches 
 class Bus:
-    def __init__(self, charge, route_len):
+    def __init__(self, charge, route_len, driver, route, s_time, e_time):
         self.charge = charge
         self.route_len = route_len
+        self.driver = driver
+        self.route = route
+        self.s_time = s_time
+        self.e_time = e_time
 
 busList = []
 i = 0
@@ -32,14 +36,18 @@ while(i<11):
     energy = miles * energy_cons_val
     #gives percetage out of 440
     battery = ((battery - energy)/440) *100
-    busList.append(Bus(battery,miles))
+    driver = "Driver Name"
+    route = random.randint(1,10)
+    s_time = 0
+    e_time = 120
+    busList.append(Bus(battery,miles, driver, route, s_time, e_time))
     i=i+1
 
 env = simpy.Environment()
 start_list = []
 ret_list = []
 eret_list =[]
-
+list_pairs = []
 #schedule for the buses starts at time 0, expected route duration is 2hrs (120 min)
 scheduled_start = 240
 for i in range(0,10): 
@@ -94,6 +102,8 @@ for i in range(0,10):
     
     efreturn_time = "%02d:%02d" % (ereturn_hr, ereturn_min) 
     efreturn_time = efreturn_time + ereturn_12
+    list_pairs.append((scheduled_start, freturn_time))
+    list_pairs.append((scheduled_start, efreturn_time))
     print('Expected return %s' % efreturn_time)
     eret_list.append(efreturn_time)
     #increment the scheduled start time for the next bus
@@ -117,6 +127,6 @@ ax.plot(x, y2, 'ro')
 plt.title('Difference Between Expected Return and Actual Return')
 plt.xlabel('Scheduled Start Time')
 plt.ylabel('Return Time')
+#plt.scatter(*zip(*list_pairs))
 plt.show()
-
 env.run()
