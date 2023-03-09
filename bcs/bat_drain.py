@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import numpy
 import matplotlib.patches as mpatches 
 class Bus:
-    def __init__(self, charge, r_dist):
+    def __init__(self, charge, route_len):
         self.charge = charge
-        self.r_dist = r_dist
+        self.route_len = route_len
 
 busList = []
 i = 0
@@ -65,18 +65,18 @@ for i in range(0,10):
     return_12 = "am"
     if return_hr > 12 and return_hr <24:
          return_12 = "pm"
-    if(return_hr ==0):
-            return_hr = 12
     return_min = return_time%60
-    if return_hr > 12:
+    if return_hr > 13:
          return_hr = return_hr -12
+    if return_hr == 0:
+         return_hr = return_hr + 12
     ## i have a bug in here going from am to pm 
     freturn_time = "%02d:%02d" % (return_hr, return_min) 
     freturn_time = freturn_time + return_12
     print('Bus %d returning at time %s' % (i+1, freturn_time))
     ret_list.append(freturn_time)
     bat = busList[i].charge
-    mil = busList[i].r_dist
+    mil = busList[i].route_len
     print('Bus %d returning with %d percent charge after %d miles'% (i+1, bat, mil))
     #est ret time
     ereturn_time = scheduled_start +120
