@@ -2,12 +2,14 @@
 #and given a particular route
 import simpy
 import random
+import pandas as pd
 #import these to create a normal distribution
 from numpy.random import normal
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
 import numpy
 import matplotlib.patches as mpatches 
+from fitter import Fitter
 class Bus:
     def __init__(self, charge, route_len, driver, route, s_time, e_time):
         self.charge = charge
@@ -42,7 +44,25 @@ while(i<11):
     e_time = 120
     busList.append(Bus(battery,miles, driver, route, s_time, e_time))
     i=i+1
-
+dataframe1 = pd.read_excel('clean_drive_data.xlsx')
+print(dataframe1)
+# here we are getting the miles traveled and the percentage battery used from the actual vta data
+i=0
+mile_list = []
+perc_used_list =[]
+while(i<1374):
+     cell1 = dataframe1.iloc[i]['miles_travelled']
+     mile_list.append(cell1)
+     cell2 = dataframe1.iloc[i]['percent_used']
+     perc_used_list.append(cell2)
+     i= i+1
+print(mile_list)
+print(perc_used_list)
+# here we want to check the data from the VTA file
+# going to import the battery and mileage , multiply, use that to create data!
+#f = Fitter(energy_cons_dst)
+#f.fit()
+#f.summary()
 env = simpy.Environment()
 start_list = []
 ret_list = []
@@ -109,7 +129,6 @@ for i in range(0,10):
     #increment the scheduled start time for the next bus
     scheduled_start = scheduled_start + 120
     print('\n')
-
 plt.style.use('_mpl-gallery')
 
 # make the data
@@ -129,4 +148,5 @@ plt.xlabel('Scheduled Start Time')
 plt.ylabel('Return Time')
 #plt.scatter(*zip(*list_pairs))
 plt.show()
+
 env.run()
