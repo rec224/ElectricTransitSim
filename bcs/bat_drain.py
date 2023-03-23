@@ -44,20 +44,7 @@ while(i<11):
     e_time = 120
     busList.append(Bus(battery,miles, driver, route, s_time, e_time))
     i=i+1
-dataframe1 = pd.read_excel('clean_drive_data.xlsx')
-print(dataframe1)
-# here we are getting the miles traveled and the percentage battery used from the actual vta data
-i=0
-mile_list = []
-perc_used_list =[]
-while(i<1374):
-     cell1 = dataframe1.iloc[i]['miles_travelled']
-     mile_list.append(cell1)
-     cell2 = dataframe1.iloc[i]['percent_used']
-     perc_used_list.append(cell2)
-     i= i+1
-print(mile_list)
-print(perc_used_list)
+
 # here we want to check the data from the VTA file
 # going to import the battery and mileage , multiply, use that to create data!
 #f = Fitter(energy_cons_dst)
