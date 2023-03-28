@@ -28,6 +28,13 @@ b = Fitter(kwh_list, distributions= get_common_distributions())
 b.fit()
 #p prints best as dgamma w/ sumsquare error 1.49, 
 #{'dgamma': {'a': 1.2217446905399747, 'loc': 1.8631753076526738, 'scale': 0.20790660522673732}}
+#         sumsquare_error          aic          bic  kl_div  ks_statistic  ks_pvalue
+#dgamma           1.493076  1224.668116 -9355.382704     inf      0.043843   0.009856
+#dweibull         1.629590  1308.231042 -9235.171549     inf      0.044877   0.007652
+#burr12           1.663234   912.843764 -9199.867763     inf      0.037152   0.043933
+#fisk             1.665211   914.210653 -9205.461166     inf      0.037213   0.043381
+#burr             1.665592   921.637504 -9197.921351     inf      0.036481   0.050346
+
 #print(p.summary())
 #print(p.get_best())
 print(b.summary())
