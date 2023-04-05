@@ -5,6 +5,8 @@ import random
 import pandas as pd
 #import these to create a normal distribution
 from numpy.random import normal
+#import to use dgamma distribution
+from scipy.stats import dgamma
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
 import numpy
@@ -27,15 +29,32 @@ energy_cons_dst = normal(2, 0.005, 50)
 # ^ creates normal dist w median 2, std dev 0.005, and sample size 50
 # create a histrogram to show the normal distribution (10 bins)
 # count, bins, ignored = plt.hist(energy_cons_dst, 10)
+
+#Now we'll create the dgamma distribution and use that to initialize buses
+kwh_df = pd.read_excel('clean_drive_data.xlsx')
+#print(kwh_df)
+# here we are getting the miles traveled and the percentage battery used from the actual vta data
+j=0 
+kwh_list=[]
+while(j<1374):
+     cell3 = kwh_df.iloc[j]['kwh']
+     kwh_list.append(cell3)
+     j= j+1
+a= 1.2217446905399747
+loc =1.863175307652673
+scale =0.20790660522673732
+#kwh_cons_dist = dgamma(kwh_list, a, loc, scale)
 plt.show()
 while(i<11):
     battery = 440
     miles = random.randint(50, 150)
-    energy_cons_val = random.normalvariate(mean, std)
+    #energy_cons_val = random.normalvariate(mean, std)
+    kwh_cons_val = dgamma.rvs(a, loc, scale, 1)
     #calculate the random amount of energy used 
     #energy is in kW*hrs
     #battery is 440
-    energy = miles * energy_cons_val
+    #energy = miles * energy_cons_val
+    energy = miles*kwh_cons_val
     #gives percetage out of 440
     battery = ((battery - energy)/440) *100
     driver = "Driver Name"
