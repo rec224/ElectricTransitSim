@@ -6,7 +6,7 @@ import pandas as pd
 #import these to create a normal distribution
 from numpy.random import normal
 #import to use dgamma distribution
-from scipy.stats import dgamma
+from scipy.stats import dgamma, laplace_asymmetric
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
 import numpy
@@ -36,20 +36,25 @@ kwh_df = pd.read_excel('clean_drive_data.xlsx')
 # here we are getting the miles traveled and the percentage battery used from the actual vta data
 j=0 
 kwh_list=[]
+miles_list=[]
 while(j<1374):
+     cell1 = kwh_df.iloc[j]['miles_travelled']
+     miles_list.append(cell1)
      cell3 = kwh_df.iloc[j]['kwh']
      kwh_list.append(cell3)
      j= j+1
 a= 1.2217446905399747
 loc =1.863175307652673
 scale =0.20790660522673732
-#kwh_cons_dist = dgamma(kwh_list, a, loc, scale)
+kwh_cons_dist = dgamma.pdf(kwh_list, a, loc, scale)
+#miles_trav_dist = laplace_asymmetric.pdf(miles_list)
 plt.show()
 while(i<11):
     battery = 440
-    miles = random.randint(50, 150)
+    #miles = random.randint(50, 150)
     #energy_cons_val = random.normalvariate(mean, std)
     kwh_cons_val = dgamma.rvs(a, loc, scale, 1)
+    miles = laplace_asymmetric.rvs(0.5656655470214752, 49.999996346657085, 17.774262322316076, 1)
     #calculate the random amount of energy used 
     #energy is in kW*hrs
     #battery is 440
