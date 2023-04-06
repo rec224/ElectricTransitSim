@@ -39,16 +39,19 @@ while(i<1374):
 #burr             1.665592   921.637504 -9197.921351     inf      0.036481   0.050346
 fig, ax = plt.subplots(1,1)
 x = kwh_list
-y= dgamma.pdf(kwh_list, 1.2217446905399747, 1.8631753076526738, 0.20790660522673732)
-ax.plot(x, y, "ro")
-plt.title('Dgamma Distrbution')
-plt.xlabel('List of kwh')
-plt.ylabel('Dgamma Dist. Result')
+#y= dgamma.pdf(kwh_list, 1.2217446905399747, 1.8631753076526738, 0.20790660522673732)
+#ax.plot(x, y, "ro")
+n_bins = 100
+ax.hist(x, n_bins)
+plt.title('kwh histogram')
+plt.xlabel('List of kwh vals')
+plt.ylabel('# of appearances')
 #print(p.summary())
 #print(p.get_best())
 #print(b.summary())
 #print(b.get_best())
 plt.show()
+
 #b prints lognorm w/ sumsquare of 1.92
 #{'lognorm': {'s': 0.20515075436948102, 'loc': 0.28822691267682377, 'scale': 1.5888141586761089}}
 
