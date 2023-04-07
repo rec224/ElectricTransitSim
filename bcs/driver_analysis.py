@@ -4,7 +4,6 @@ import numpy
 import matplotlib.pyplot as plt
 from fitter import Fitter, get_distributions, get_common_distributions
 dataframe1 = pd.read_excel('driver_data_points.xlsx')
-#print(dataframe1)
 #now we have to go through and group the data by driver ids
 i =0
 driver_ids =[]

@@ -48,7 +48,17 @@ loc =1.863175307652673
 scale =0.20790660522673732
 kwh_cons_dist = dgamma.pdf(kwh_list, a, loc, scale)
 #miles_trav_dist = laplace_asymmetric.pdf(miles_list)
-plt.show()
+#plt.show()
+#use the data to make a list of the possible routes 
+route_list = pd.read_excel('clean_routes.xlsx')
+driver_df = pd.read_excel('driver_data_points.xlsx')
+#now we have to go through and group the data by driver ids
+w =0
+driver_ids =[]
+while w<539:
+    driver_ids.append(driver_df.iloc[w]['op_id'])
+    w=w+1
+u_driver_ids = numpy.unique(driver_ids)
 while(i<11):
     battery = 440
     #miles = random.randint(50, 150)
@@ -62,11 +72,14 @@ while(i<11):
     energy = miles*kwh_cons_val
     #gives percetage out of 440
     battery = ((battery - energy)/440) *100
-    driver = "Driver Name"
-    route = random.randint(1,10)
+    d_id = random.randint(0, len(u_driver_ids)-1)
+    driver = u_driver_ids[d_id]
+    index = random.randint(0, 281)
+    route = route_list.iloc[index]['routeNum']
     s_time = 0
     e_time = 120
     busList.append(Bus(battery,miles, driver, route, s_time, e_time))
+    print('Battery: %d \n miles: %s \n driver: %s \n route: %d \n start: %d \n end: %d' % (battery, miles, driver, route, s_time, e_time))
     i=i+1
 
 # here we want to check the data from the VTA file
