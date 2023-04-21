@@ -79,7 +79,7 @@ while(i<11):
     s_time = 0
     e_time = 120
     busList.append(Bus(battery,miles, driver, route, s_time, e_time))
-    print('Battery: %d \n miles: %s \n driver: %s \n route: %d \n start: %d \n end: %d' % (battery, miles, driver, route, s_time, e_time))
+    print('Battery: %d \nmiles: %s \ndriver: %s \nroute: %d \nstart: %d \nend: %d' % (battery, miles, driver, route, s_time, e_time))
     i=i+1
 
 # here we want to check the data from the VTA file
