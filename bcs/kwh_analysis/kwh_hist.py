@@ -11,7 +11,7 @@ while(i<1374):
 #create a histogram showing the kwh list so that we can compare with the dgamma distribution
 fig, ax = plt.subplots(1,1)
 x = kwh_list
-# changing the number of bns to 1000 better shows the dgamma distribution
+# changing the number of bns to 100 better shows the dgamma distribution
 n_bins = 100
 ax.hist(x, n_bins)
 plt.title('kwh histogram')
