@@ -14,16 +14,16 @@ u_driver_ids = numpy.unique(driver_ids)
 print(u_driver_ids)
 kwh_avg_per_d=[]
 z =0
-while z<k:
+while z<136:
     df2=dataframe1.loc[(dataframe1['op_id'] == u_driver_ids[z])]
     n = df2['kwh'].mean()
     kwh_avg_per_d.append(n)
     z=z+1
 print(kwh_avg_per_d)
 fig, ax = plt.subplots()
-ax.plot(u_driver_ids, kwh_avg_per_d, 'ro')
+ax.plot(kwh_avg_per_d, u_driver_ids, 'ro')
 plt.title('Mean kwh for each unique driver')
-plt.xlabel('Driver')
-plt.ylabel('kwh')
+plt.xlabel('kwh')
+plt.ylabel('Driver')
 plt.show()
 #print(df2)
