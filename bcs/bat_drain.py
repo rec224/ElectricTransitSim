@@ -3,6 +3,7 @@
 import simpy
 import random
 import pandas as pd
+from charge_time import time_dif, charge_time
 #import these to create a normal distribution
 from numpy.random import normal
 #import to use dgamma distribution
@@ -13,26 +14,20 @@ import numpy
 import matplotlib.patches as mpatches 
 from fitter import Fitter
 class Bus:
-    def __init__(self, charge, route_len, driver, route, s_time, e_time):
+    def __init__(self, charge, route_len, driver, route, s_r_time, e_r_time, s_charge, e_charge):
         self.charge = charge
         self.route_len = route_len
         self.driver = driver
         self.route = route
-        self.s_time = s_time
-        self.e_time = e_time
+        self.s_r_time = s_r_time
+        self.e_r_time = e_r_time
+        self.s_charge = s_charge
+        self.e_charge = e_charge
 
 busList = []
 i = 0
-mean = 2
-std = 0.005
-energy_cons_dst = normal(2, 0.005, 50)
-# ^ creates normal dist w median 2, std dev 0.005, and sample size 50
-# create a histrogram to show the normal distribution (10 bins)
-# count, bins, ignored = plt.hist(energy_cons_dst, 10)
-
 #Now we'll create the dgamma distribution and use that to initialize buses
 kwh_df = pd.read_excel('clean_drive_data.xlsx')
-#print(kwh_df)
 # here we are getting the miles traveled and the percentage battery used from the actual vta data
 j=0 
 kwh_list=[]
@@ -59,10 +54,23 @@ while w<539:
     driver_ids.append(driver_df.iloc[w]['op_id'])
     w=w+1
 u_driver_ids = numpy.unique(driver_ids)
+#get the arrays created in charge_time
+s_charge_list, e_charge_list, s_time_list, ct_time_list = charge_time()
 while(i<11):
     battery = 440
-    #miles = random.randint(50, 150)
-    #energy_cons_val = random.normalvariate(mean, std)
+    # use the data to get a charge start time and change in charge values
+    b = random.randint(0, len(s_charge_list) -1)
+    s_charge = s_charge_list[b]
+    e_charge = e_charge_list[b]
+    s_r_time= s_time_list[b]
+    e_r_time = ct_time_list[b]
+    convert_mins = s_r_time + e_r_time
+    hours = convert_mins/60
+    convert_mins = convert_mins%60
+    appropriate_e_time = '%d:%d' %(hours, convert_mins)
+    convert_mins_s = s_r_time%60
+    convert_hrs_s = s_r_time/60
+    appropriate_s_time = '%d:%d' %(convert_hrs_s, convert_mins_s)
     kwh_cons_val = dgamma.rvs(a, loc, scale, 1)
     miles = laplace_asymmetric.rvs(0.5656655470214752, 49.999996346657085, 17.774262322316076, 1)
     #calculate the random amount of energy used 
@@ -76,10 +84,8 @@ while(i<11):
     driver = u_driver_ids[d_id]
     index = random.randint(0, 281)
     route = route_list.iloc[index]['routeNum']
-    s_time = 0
-    e_time = 120
-    busList.append(Bus(battery,miles, driver, route, s_time, e_time))
-    print('Battery: %d \nmiles: %s \ndriver: %s \nroute: %d \nstart: %d \nend: %d' % (battery, miles, driver, route, s_time, e_time))
+    busList.append(Bus(battery, miles, driver, route, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
+    print('Battery: %d\nmiles: %s\ndriver: %s\nroute: %d\nstart charge time: %s\nend charge time: %s\nstart charging: %d\nend charging: %d' % (battery, miles, driver, route, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
     i=i+1
 
 # here we want to check the data from the VTA file
@@ -92,6 +98,8 @@ start_list = []
 ret_list = []
 eret_list =[]
 list_pairs = []
+raw_ret_list=[]
+raw_eret_list=[]
 #schedule for the buses starts at time 0, expected route duration is 2hrs (120 min)
 scheduled_start = 240
 for i in range(0,10): 
@@ -113,6 +121,7 @@ for i in range(0,10):
     drive_dur = random.normalvariate(120, 20)
     #calculate return time
     return_time = drive_dur + scheduled_start
+    raw_ret_list.append(return_time)
     return_hr = return_time/60
     return_12 = "am"
     if return_hr > 12 and return_hr <24:
@@ -132,6 +141,7 @@ for i in range(0,10):
     print('Bus %d returning with %d percent charge after %d miles'% (i+1, bat, mil))
     #est ret time
     ereturn_time = scheduled_start +120
+    raw_eret_list.append(ereturn_time)
     ereturn_hr = ereturn_time/60
     ereturn_12 = "pm"
     if ereturn_hr < 12:
@@ -156,9 +166,9 @@ for i in range(0,10):
 plt.style.use('_mpl-gallery')
 
 # make the data
-x = start_list
-y1 = ret_list
-y2 = eret_list
+x = start_list 
+y1 = raw_ret_list 
+y2 = raw_eret_list
 vals =  ['Estimated', 'Actual']
 # plot
 fig, ax = plt.subplots()
@@ -169,7 +179,7 @@ ax.plot(x, y1, 'go')
 ax.plot(x, y2, 'ro')
 plt.title('Difference Between Expected Return and Actual Return')
 plt.xlabel('Scheduled Start Time')
-plt.ylabel('Return Time')
+plt.ylabel('Return Time (in minutes after 12:00am)')
 #plt.scatter(*zip(*list_pairs))
 plt.show()
 
