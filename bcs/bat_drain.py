@@ -3,7 +3,7 @@
 import simpy
 import random
 import pandas as pd
-from charge_time import time_dif, charge_time
+from charge_time import charge_time
 #import these to create a normal distribution
 from numpy.random import normal
 #import to use dgamma distribution
