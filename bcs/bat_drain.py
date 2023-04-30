@@ -4,23 +4,22 @@ import simpy
 import random
 import pandas as pd
 from charge_time import charge_time
-#import these to create a normal distribution
-from numpy.random import normal
 #import to use dgamma distribution
 from scipy.stats import dgamma, laplace_asymmetric
 #display the histogram of the distribution
 import matplotlib.pyplot as plt
 import numpy
 import matplotlib.patches as mpatches 
-from fitter import Fitter
 class Bus:
-    def __init__(self, charge, route_len, driver, route, s_r_time, e_r_time, s_charge, e_charge):
+    def __init__(self, charge, route_len, driver, route, s_d_time, e_d_time, s_c_time, e_c_time, s_charge, e_charge):
         self.charge = charge
         self.route_len = route_len
         self.driver = driver
         self.route = route
-        self.s_r_time = s_r_time
-        self.e_r_time = e_r_time
+        self.s_d_time = s_d_time
+        self.e_d_time = e_d_time
+        self.s_c_time = s_c_time
+        self.e_c_time = e_c_time
         self.s_charge = s_charge
         self.e_charge = e_charge
 
@@ -47,6 +46,7 @@ kwh_cons_dist = dgamma.pdf(kwh_list, a, loc, scale)
 #use the data to make a list of the possible routes 
 route_list = pd.read_excel('clean_routes.xlsx')
 driver_df = pd.read_excel('driver_data_points.xlsx')
+k =len(route_list) -1
 #now we have to go through and group the data by driver ids
 w =0
 driver_ids =[]
@@ -67,16 +67,27 @@ while(i<11):
     convert_mins = s_r_time + e_r_time
     hours = convert_mins/60
     convert_mins = convert_mins%60
-    appropriate_e_time = '%d:%d' %(hours, convert_mins)
+    appropriate_e_time = '%02d:%02d' %(hours, convert_mins)
     convert_mins_s = s_r_time%60
     convert_hrs_s = s_r_time/60
-    appropriate_s_time = '%d:%d' %(convert_hrs_s, convert_mins_s)
+    appropriate_s_time = '%02d:%02d' %(convert_hrs_s, convert_mins_s)
     kwh_cons_val = dgamma.rvs(a, loc, scale, 1)
     miles = laplace_asymmetric.rvs(0.5656655470214752, 49.999996346657085, 17.774262322316076, 1)
     #calculate the random amount of energy used 
     #energy is in kW*hrs
     #battery is 440
     #energy = miles * energy_cons_val
+    v = random.randint(0, k)
+    s_d_time =route_list.iloc[v]['s_mins']
+    e_d_time =route_list.iloc[v]['e_mins']
+    convert_mins = s_d_time
+    hours = convert_mins/60
+    convert_mins = convert_mins%60
+    d_s_t = '%02d:%02d' %(hours, convert_mins)
+    convert_mins = e_d_time
+    hours = convert_mins/60
+    convert_mins = convert_mins%60
+    d_e_t = '%02d:%02d' %(hours, convert_mins)
     energy = miles*kwh_cons_val
     #gives percetage out of 440
     battery = ((battery - energy)/440) *100
@@ -84,8 +95,8 @@ while(i<11):
     driver = u_driver_ids[d_id]
     index = random.randint(0, 281)
     route = route_list.iloc[index]['routeNum']
-    busList.append(Bus(battery, miles, driver, route, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
-    print('Battery: %d\nmiles: %s\ndriver: %s\nroute: %d\nstart charge time: %s\nend charge time: %s\nstart charging: %d\nend charging: %d' % (battery, miles, driver, route, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
+    busList.append(Bus(battery, miles, driver, route, d_s_t, d_e_t, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
+    print('Battery: %d\nmiles: %s\ndriver: %s\nroute: %d\nstart drive time: %s\nend drive time: %s\nstart charge time: %s\nend charge time: %s\nstart charging: %d\nend charging: %d' % (battery, miles, driver, route, d_s_t, d_e_t, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
     i=i+1
 
 # here we want to check the data from the VTA file

@@ -1,6 +1,9 @@
 import pandas as pd
 #from fitter import Fitter, get_distributions
 import matplotlib.pyplot as plt
+#install seaborn
+import seaborn as sns
+import openpyxl
 #unplug must be greater than plug in
 #does not deal with changing years
 def time_dif(plug_inm,plug_ind, plug_int, unplugm, unplugd, unplugt):
@@ -43,6 +46,8 @@ def charge_time():
     e_charge_list =[]
     s_time_list=[]
     ct_time_list =[]
+    delta_time_list=[]
+    delta_charge_list=[]
     while k>0:
         plug_inm = charge_data.iloc[k]['Session plug-inm']
         plug_ind = charge_data.iloc[k]['Session plug-ind']
@@ -57,13 +62,21 @@ def charge_time():
         e_percent = charge_data.iloc[k]['Ending SOC (%)']
         #delta_time = e_dt-s_dt
         hrs_charging = mins_charging/60
+        delta_perc = e_percent-s_percent
         if(hrs_charging >=0):
-            if(hrs_charging <=72):
-                s_charge_list.append(s_percent)
-                e_charge_list.append(e_percent)
-                s_time_list.append(start_min)
-                ct_time_list.append(mins_charging)
+            if(hrs_charging <=10):
+                if(delta_perc >0):
+                    if(delta_perc >= 4.5*hrs_charging):
+                        delta_charge_list.append(delta_perc)
+                        delta_time_list.append(hrs_charging)
+                        s_charge_list.append(s_percent)
+                        e_charge_list.append(e_percent)
+                        s_time_list.append(start_min)
+                        ct_time_list.append(mins_charging)
         k=k-1
+    lst = [delta_charge_list, delta_time_list]
+    df = pd.DataFrame(columns=lst)
+    df.to_excel('charge_vs_time.xlsx')
     #print(delta_time_list)
     #print(delta_charge_list)
     #fig, ax = plt.subplots()
@@ -72,7 +85,9 @@ def charge_time():
     #plt.xlabel('change in time (hrs)')
     #plt.ylabel('change in charge')
     #plt.show()
-    #return delta_time_list, delta_charge_list
+    #return delta_time_list, 
+    #chargevtime = sns.load_dataset()
+    #sns.regplot(x=delta_time_list, y=delta_charge_list, data=df)
     return s_charge_list, e_charge_list, s_time_list, ct_time_list
 
 charge_time()
