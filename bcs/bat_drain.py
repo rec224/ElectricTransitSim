@@ -10,6 +10,8 @@ from scipy.stats import dgamma, laplace_asymmetric
 import matplotlib.pyplot as plt
 import numpy
 import matplotlib.patches as mpatches 
+#import Nick's code for assigning routes
+from helpers import initRoutes
 class Bus:
     def __init__(self, charge, route_len, driver, route, s_d_time, e_d_time, s_c_time, e_c_time, s_charge, e_charge):
         self.charge = charge
@@ -24,6 +26,7 @@ class Bus:
         self.e_charge = e_charge
 
 busList = []
+opt_bus_list=[]
 i = 0
 #Now we'll create the dgamma distribution and use that to initialize buses
 kwh_df = pd.read_excel('clean_drive_data.xlsx')
@@ -44,6 +47,7 @@ kwh_cons_dist = dgamma.pdf(kwh_list, a, loc, scale)
 #miles_trav_dist = laplace_asymmetric.pdf(miles_list)
 #plt.show()
 #use the data to make a list of the possible routes 
+
 route_list = pd.read_excel('clean_routes.xlsx')
 driver_df = pd.read_excel('driver_data_points.xlsx')
 k =len(route_list) -1
@@ -55,28 +59,24 @@ while w<539:
     w=w+1
 u_driver_ids = numpy.unique(driver_ids)
 #get the arrays created in charge_time
-s_charge_list, e_charge_list, s_time_list, ct_time_list = charge_time()
+charging = pd.read_excel('charge_time.xlsx')
+charging_t =[]
+charging_b=[]
+p=0
+while (p<len(charging)):
+     charging_t.append(charging.iloc[p]['change in hrs'])
+     charging_b.append(charging.iloc[p]['change in charge'])
+     p=p+1
 while(i<11):
     battery = 440
-    # use the data to get a charge start time and change in charge values
-    b = random.randint(0, len(s_charge_list) -1)
-    s_charge = s_charge_list[b]
-    e_charge = e_charge_list[b]
-    s_r_time= s_time_list[b]
-    e_r_time = ct_time_list[b]
-    convert_mins = s_r_time + e_r_time
-    hours = convert_mins/60
-    convert_mins = convert_mins%60
-    appropriate_e_time = '%02d:%02d' %(hours, convert_mins)
-    convert_mins_s = s_r_time%60
-    convert_hrs_s = s_r_time/60
-    appropriate_s_time = '%02d:%02d' %(convert_hrs_s, convert_mins_s)
     kwh_cons_val = dgamma.rvs(a, loc, scale, 1)
     miles = laplace_asymmetric.rvs(0.5656655470214752, 49.999996346657085, 17.774262322316076, 1)
     #calculate the random amount of energy used 
     #energy is in kW*hrs
     #battery is 440
     #energy = miles * energy_cons_val
+    b= random.randint(0, len(charging)-1)
+    s_charge_list, e_charge_list, s_time_list, ct_time_list=charge_time()
     v = random.randint(0, k)
     s_d_time =route_list.iloc[v]['s_mins']
     e_d_time =route_list.iloc[v]['e_mins']
@@ -84,19 +84,42 @@ while(i<11):
     hours = convert_mins/60
     convert_mins = convert_mins%60
     d_s_t = '%02d:%02d' %(hours, convert_mins)
-    convert_mins = e_d_time
-    hours = convert_mins/60
-    convert_mins = convert_mins%60
-    d_e_t = '%02d:%02d' %(hours, convert_mins)
+    conver_mins = e_d_time
+    hours = conver_mins/60
+    conver_mins = conver_mins%60
+    d_e_t = '%02d:%02d' %(hours, conver_mins)
+    s_c_t= d_e_t
+    e_mins = e_d_time + 60*charging_t[b]
+    conv_min = e_mins%60
+    conv_hrs = e_mins/60
+    if(conv_hrs >24):
+         conv_hrs = conv_hrs -24
+    e_c_t = '%02d:%02d' %(conv_hrs, conv_min)
     energy = miles*kwh_cons_val
     #gives percetage out of 440
     battery = ((battery - energy)/440) *100
+    s_charge = battery
+    e_charge = s_charge + charging_b[b]
+    if(e_charge > 100):
+         e_charge=100
+    hrs = (e_charge -s_charge - 5.1166)/8.6519
     d_id = random.randint(0, len(u_driver_ids)-1)
     driver = u_driver_ids[d_id]
     index = random.randint(0, 281)
     route = route_list.iloc[index]['routeNum']
-    busList.append(Bus(battery, miles, driver, route, d_s_t, d_e_t, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
-    print('Battery: %d\nmiles: %s\ndriver: %s\nroute: %d\nstart drive time: %s\nend drive time: %s\nstart charge time: %s\nend charge time: %s\nstart charging: %d\nend charging: %d' % (battery, miles, driver, route, d_s_t, d_e_t, appropriate_s_time, appropriate_e_time, s_charge, e_charge))
+    busList.append(Bus(battery, miles, driver, route, d_s_t, d_e_t, s_c_t, e_c_t, s_charge, e_charge))
+    print('Battery: %d\nmiles: %s\ndriver: %s\nroute: %d\nstart drive time: %s\nend drive time: %s\nstart charge time: %s\nend charge time: %s\nstart charging: %d\nend charging: %d\n' % (battery, miles, driver, route, d_s_t, d_e_t, s_c_t, e_c_t, s_charge, e_charge))
+    #print(hrs*60)
+    #print (60*charging_t[b])
+    if(hrs*60 < 60*charging_t[b]):
+          conv_min = (hrs/1)*60 + s_d_time + (hrs%1)*60
+          conv_hrs = conv_min/60
+          if(conv_hrs >24):
+              conv_hrs = conv_hrs -24
+          e_c_t = '%02d:%02d' %(conv_hrs, conv_min)
+          opt_bus_list.append(Bus(battery, miles, driver, route, d_s_t, d_e_t, s_c_t, e_c_t, s_charge, e_charge))
+    else:
+          opt_bus_list.append(Bus(battery, miles, driver, route, d_s_t, d_e_t, s_c_t, e_c_t, s_charge, e_charge))
     i=i+1
 
 # here we want to check the data from the VTA file
@@ -105,7 +128,7 @@ while(i<11):
 #f.fit()
 #f.summary()
 env = simpy.Environment()
-start_list = []
+'''start_list = []
 ret_list = []
 eret_list =[]
 list_pairs = []
@@ -173,24 +196,63 @@ for i in range(0,10):
     eret_list.append(efreturn_time)
     #increment the scheduled start time for the next bus
     scheduled_start = scheduled_start + 120
-    print('\n')
+    print('\n')'''
 plt.style.use('_mpl-gallery')
+charge_list =[]
+opt_chg_time =[]
+nonopt_chg_time=[]
+
+for i in range(0,10):
+     dcharge = busList[i].e_charge - busList[i].s_charge
+     charge_list.append(dcharge)
+     t_charge = opt_bus_list[i].e_c_time
+     t_chargei = opt_bus_list[i].s_c_time
+     tm = t_charge.split(":")
+     tmi = t_chargei.split(":")
+     tcharge = (int(tm[0])-int(tmi[0]))
+     if(tcharge<0):
+          tcharge = tcharge +24
+     tcharge = tcharge*60
+     tmin = int(tm[1]) - int(tmi[1])
+     if(tmin <0):
+          tmin = 60-tmin
+          tcharge = tcharge-60
+     tcharge = tcharge + tmin
+     opt_chg_time.append(tcharge)
+
+     nont_chg = busList[i].e_c_time
+     nont_chgi = busList[i].s_c_time
+     otm = (nont_chg.split(":"))
+     otmi = (nont_chgi.split(":"))
+     otcharge = (int(otm[0])-int(otmi[0]))
+     if(otcharge<0):
+          otcharge = 24+ otcharge
+     otcharge = otcharge*60
+     otmin = int(otm[1]) - int(otmi[1])
+     if(otmin <0):
+          otmin = 60-otmin
+          otcharge = otcharge-60
+     otcharge = otcharge + otmin
+     nonopt_chg_time.append(otcharge)
 
 # make the data
-x = start_list 
-y1 = raw_ret_list 
-y2 = raw_eret_list
-vals =  ['Estimated', 'Actual']
+x = charge_list 
+y1 = opt_chg_time 
+y2 = nonopt_chg_time
+print(y1)
+print(y2)
+#print(y2)
+vals =  ['Optimal', 'Nonoptimal']
 # plot
 fig, ax = plt.subplots()
-red_patch = mpatches.Patch(color='red', label='Estimated Return Time')
-green_patch = mpatches.Patch(color ='green', label = 'Actual Return Time')
+red_patch = mpatches.Patch(color='red', label='Optimal End Charge')
+green_patch = mpatches.Patch(color ='green', label = 'Nonoptimal End Charge')
 ax.legend(handles=[red_patch, green_patch])
-ax.plot(x, y1, 'go')
-ax.plot(x, y2, 'ro')
-plt.title('Difference Between Expected Return and Actual Return')
-plt.xlabel('Scheduled Start Time')
-plt.ylabel('Return Time (in minutes after 12:00am)')
+plt.plot(x, y1, 'ro', x, y2, 'go')
+#plt.plot(x, y2, 'go', label ='nonoptimal charge')
+plt.title('Comparing Time Charging to Time Needed')
+plt.xlabel('Inital Battery %')
+plt.ylabel('Change in Time (mins)')
 #plt.scatter(*zip(*list_pairs))
 plt.show()
 
